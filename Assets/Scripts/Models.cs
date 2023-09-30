@@ -48,8 +48,12 @@ public static class Models
         public float CrouchSpeedEffector;
         public float ProneSpeedEffector;
         public float FallingSpeedEffector;
-    }
 
+        [Header("Is Grounded / Falling")]
+        public float isGroundedRadius;
+        public float isFallingSpeed;
+    }
+        
     [Serializable]
     public class CharacterStance
     {
@@ -63,12 +67,17 @@ public static class Models
     [Serializable]
     public class WeaponSettingsModel
     {
-        [Header("Sway")]
+        [Header("Weapon Sway")]
         public float SwayAmount;
         public float SwaySmooting;
         public float SwayResetSmooting;
         public float SwayClampX;
         public float SwayClampY;
+
+        [Header("Weapon Movement Sway")]
+        public float MovementSwayX;
+        public float MovementSwayY;
+        public float MovementSwaySmoothing;
     }
 
     #endregion
