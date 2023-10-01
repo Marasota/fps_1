@@ -29,6 +29,16 @@ public class MyWeaponController: MonoBehaviour
 
     public float fallingDelay;
 
+    [Header("Weapon Sway")]
+    public Transform weaponSwayObject;
+
+    public float swayAmountA = 1;
+    public float swayAmountB = 2;
+    public float swayScale = 600;
+    public float swayLerpSpeed = 14;
+
+    public float swayTime;
+    public Vector3 swayPosition;
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
@@ -46,6 +56,7 @@ public class MyWeaponController: MonoBehaviour
         
         CalculateWeaponRotation();
         SetWeaponAnimations();
+        CalculateWeaponSway();
     }
 
     public void TriggerJump()
@@ -53,7 +64,7 @@ public class MyWeaponController: MonoBehaviour
         weaponAnimator.SetTrigger("Jump");
         isGroundedTrigger = false;
     }
-
+     
     private void CalculateWeaponRotation()
     { 
         targetWeaponRotation.y += settings.SwayAmount * _characterController.GetInputView().x * Time.deltaTime;
@@ -100,5 +111,20 @@ public class MyWeaponController: MonoBehaviour
         
         weaponAnimator.SetBool("IsSprinting", _characterController.IsSprinting());
         weaponAnimator.SetFloat("WeaponAnimationSpeed", _characterController.weaponAnimationSpeed);
+    }
+
+    private void CalculateWeaponSway()
+    {
+        var targetPosition = LissajousCurve(swayTime, swayAmountA, swayAmountB) / swayScale;
+
+        swayPosition = Vector3.Lerp(swayPosition, targetPosition, Time.smoothDeltaTime * swayLerpSpeed);
+        swayTime += Time.deltaTime;
+
+        weaponSwayObject.localPosition = swayPosition;
+    }
+
+    private Vector3 LissajousCurve(float Time, float A, float B)
+    {
+        return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
 }
