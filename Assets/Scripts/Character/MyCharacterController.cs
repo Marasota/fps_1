@@ -53,11 +53,14 @@ public class MyCharacterController : MonoBehaviour
     [Header("Weapon")]
     public MyWeaponController currentWeapon;
     public float weaponAnimationSpeed;
-
     [HideInInspector]
     public bool isGrounded;
     [HideInInspector]
     public bool isFalling;
+
+    [Header("Aiming in")]
+    public bool isAimingIn;
+
 
     #region - Awake - 
     private void Start()
@@ -75,6 +78,9 @@ public class MyCharacterController : MonoBehaviour
         _defaultInput.Character.Prone.performed += e => Prone();
         _defaultInput.Character.Sprint.performed += e => ToggleSprint();
         _defaultInput.Character.SprintReleased.performed += e => StopSprint();
+
+        _defaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
+        _defaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
 
         _defaultInput.Enable();
 
@@ -105,7 +111,32 @@ public class MyCharacterController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+        CalculateAimingIn();
     }
+    #endregion
+
+
+    #region - Aiming In -
+
+    private void AimingInPressed()
+    {
+        isAimingIn = true;
+    }
+
+    private void AimingInReleased()
+    {
+        isAimingIn = false;
+    }
+
+    private void CalculateAimingIn()
+    {
+        if (!currentWeapon)
+        {
+            return;
+        }
+        currentWeapon.isAimingIn = isAimingIn;
+    }
+
     #endregion
 
     #region - IsFalling / isGrounded - 
@@ -125,15 +156,17 @@ public class MyCharacterController : MonoBehaviour
     #region - View / Movement
     private void CalculateView()
     {
-        _newCharacterRotation.y += playerSettings.ViewXSensitivity * _inputView.x * Time.deltaTime;
+        _newCharacterRotation.y += (isAimingIn ? playerSettings.ViewXSensitivity 
+            * playerSettings.AimingSensitivityEffector : playerSettings.ViewXSensitivity) * _inputView.x * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(_newCharacterRotation);
 
-        _newCameraRotation.x -= playerSettings.ViewYSensitivity * _inputView.y * Time.deltaTime;
+        _newCameraRotation.x -= (isAimingIn? playerSettings.ViewYSensitivity
+            * playerSettings.AimingSensitivityEffector : playerSettings.ViewYSensitivity) * _inputView.y * Time.deltaTime;
         _newCameraRotation.x = Mathf.Clamp(_newCameraRotation.x, viewClampYMin, viewClampXMin);
 
         cameraHolder.localRotation = Quaternion.Euler(_newCameraRotation);
     }
-
+     
     private void CalculateMovement()
     {
         if (_inputMovement.y <= 0.2f)
@@ -161,6 +194,10 @@ public class MyCharacterController : MonoBehaviour
         else if (playerStance == PlayerStance.Prone)
         {
             playerSettings.SpeedEffector = playerSettings.ProneSpeedEffector;
+        }
+        else if (isAimingIn)
+        {
+            playerSettings.SpeedEffector = playerSettings.AimingSpeedEffector;
         }
         else
         {

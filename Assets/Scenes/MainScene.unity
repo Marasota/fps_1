@@ -513,6 +513,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
   m_PrefabInstance: {fileID: 1788794897}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &414834430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 414834431}
+  m_Layer: 10
+  m_Name: SightTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &414834431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414834430}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0043, y: 0.0963, z: -0.036}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1013792968}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &441629350
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,10 +587,16 @@ MonoBehaviour:
   weaponSwayObject: {fileID: 1445025080}
   swayAmountA: 1
   swayAmountB: 2
-  swayScale: 100
+  swayScale: 5000
   swayLerpSpeed: 14
   swayTime: 0
   swayPosition: {x: 0, y: 0, z: 0}
+  sightTarget: {fileID: 414834431}
+  sightOffset: 0.17
+  aimingInTime: 0.2
+  weaponSwayPosition: {x: 0, y: 0, z: 0}
+  weaponSwayPositionVelocity: {x: 0, y: 0, z: 0}
+  isAimingIn: 0
 --- !u!4 &441629352
 Transform:
   m_ObjectHideFlags: 0
@@ -727,7 +764,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -792,6 +829,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 262128739}
+  - {fileID: 414834431}
   m_Father: {fileID: 1445025080}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -960,6 +998,7 @@ MonoBehaviour:
   playerSettings:
     ViewXSensitivity: 20
     ViewYSensitivity: 20
+    AimingSensitivityEffector: 0.5
     ViewXInverted: 0
     ViewYInverted: 0
     SprintingHold: 0
@@ -976,6 +1015,7 @@ MonoBehaviour:
     CrouchSpeedEffector: 0.6
     ProneSpeedEffector: 0.2
     FallingSpeedEffector: 0.8
+    AimingSpeedEffector: 0.5
     isGroundedRadius: 0.1
     isFallingSpeed: 1
   viewClampYMin: -70
@@ -1005,6 +1045,7 @@ MonoBehaviour:
   weaponAnimationSpeed: 0
   isGrounded: 0
   isFalling: 0
+  isAimingIn: 0
 --- !u!143 &1291140675
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1453,7 +1494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.39999995
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1469,31 +1510,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.4275761
+      value: 0.50000006
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.5651834
+      value: -0.50000006
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.53359514
+      value: 0.49999997
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.46154383
+      value: 0.49999997
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -102.612
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 17.432007
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: d1036415f6ea442a9afc3adb6e466f76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 72.705
+      value: 70
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
