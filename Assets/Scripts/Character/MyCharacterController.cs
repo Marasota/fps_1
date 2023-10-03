@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 using static Models;
@@ -16,6 +17,7 @@ public class MyCharacterController : MonoBehaviour
 
     [Header("References")]
     public Transform cameraHolder;
+    public Transform camera;
     public Transform feetTransform;
 
 
@@ -58,6 +60,17 @@ public class MyCharacterController : MonoBehaviour
     [HideInInspector]
     public bool isFalling;
 
+    [Header("Leaning")]
+    public Transform leanPivot;
+    private float currentLean;
+    private float targetLean;
+    public float leanAngle;
+    public float leanSmoothing;
+    private float leanVelocity;
+
+    private bool isLeaningLeft;
+    private bool isLeaningRight;
+
     [Header("Aiming in")]
     public bool isAimingIn;
 
@@ -81,6 +94,13 @@ public class MyCharacterController : MonoBehaviour
 
         _defaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         _defaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
+
+
+        _defaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
+        _defaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
+
+        _defaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true; 
+        _defaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
 
         _defaultInput.Enable();
 
@@ -111,10 +131,10 @@ public class MyCharacterController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+        CalculateLeaning();
         CalculateAimingIn();
     }
     #endregion
-
 
     #region - Aiming In -
 
@@ -231,6 +251,29 @@ public class MyCharacterController : MonoBehaviour
 
         _characterController.Move(movementSpeed );
     }
+
+    #endregion
+
+    #region - Leaning -
+    private void CalculateLeaning()
+    {
+        if (isLeaningLeft)
+        {
+            targetLean = leanAngle;
+        }
+        else if(isLeaningRight)
+        {
+            targetLean = -leanAngle;
+        }
+        else
+        {
+            targetLean = 0; 
+        }
+        currentLean = Mathf.SmoothDamp(currentLean, targetLean, ref leanVelocity, leanSmoothing);
+
+        leanPivot.localRotation = Quaternion.Euler(new Vector3(0, 0, currentLean));
+    }
+
 
     #endregion
 
