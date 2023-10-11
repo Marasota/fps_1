@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,6 +10,12 @@ public class MyWeaponController: MonoBehaviour
 
     [Header("References")]
     public Animator weaponAnimator;
+    public MyBullet bulletPrefab;
+    private MyBullet currentArrow;
+    public Transform bulletSpawn;
+    public Camera fpsCamera;
+
+
 
     [Header("Settings")]
     public WeaponSettingsModel settings;
@@ -48,9 +56,18 @@ public class MyWeaponController: MonoBehaviour
     public Vector3 weaponSwayPosition;
     public Vector3 weaponSwayPositionVelocity;
 
+
+    [Header("Shooting")]
+    public float rateOfFire;
+    public float rangeOfFire;
+    [HideInInspector]
+    public bool isShooting;
+    public float reloadTime;
+
+
+
     [HideInInspector]
     public bool isAimingIn;
-
 
     private void Start()
     {
@@ -71,6 +88,34 @@ public class MyWeaponController: MonoBehaviour
         SetWeaponAnimations();
         CalculateWeaponSway();
         CalculateAimingIn();
+        CalculateShooting();
+    }
+
+    private void CalculateShooting()
+    {
+        if (isShooting)
+        {
+            Shoot();
+            isShooting = false;
+        }
+    }
+
+    private void Shoot()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(fpsCamera.transform.position, fpsCamera.transform.forward, out hit, rangeOfFire))
+        {
+            Debug.Log(hit.transform.name);
+
+            Target target = hit.transform.GetComponent<Target>();
+            if(target != null)
+            {
+                target.TakeDamage(rateOfFire);
+            }
+        }
+
+//        var bullet = Instantiate(bulletPrefab, bulletSpawn);
     }
 
     private void CalculateAimingIn()
@@ -143,6 +188,8 @@ public class MyWeaponController: MonoBehaviour
         weaponAnimator.SetFloat("WeaponAnimationSpeed", _characterController.weaponAnimationSpeed);
     }
 
+    #region - Sway -
+
     private void CalculateWeaponSway()
     {
         var targetPosition = LissajousCurve(swayTime, swayAmountA, swayAmountB) / (isAimingIn ? swayScale * 3 : swayScale);
@@ -150,7 +197,7 @@ public class MyWeaponController: MonoBehaviour
         swayPosition = Vector3.Lerp(swayPosition, targetPosition, Time.smoothDeltaTime * swayLerpSpeed);
         swayTime += Time.deltaTime;
 
-        if(swayTime > 6.3f)
+        if (swayTime > 6.3f)
         {
             swayTime = 0;
         }
@@ -160,4 +207,6 @@ public class MyWeaponController: MonoBehaviour
     {
         return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
+
+    #endregion
 }

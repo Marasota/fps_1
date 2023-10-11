@@ -57,9 +57,8 @@ public class MyCharacterController : MonoBehaviour
     public float weaponAnimationSpeed;
     [HideInInspector]
     public bool isGrounded;
-    [HideInInspector]
-    public bool isFalling;
-
+    [HideInInspector] public bool isFalling;
+ 
     [Header("Leaning")]
     public Transform leanPivot;
     private float currentLean;
@@ -76,9 +75,11 @@ public class MyCharacterController : MonoBehaviour
 
 
     #region - Awake - 
-    private void Start()
+    private void Start() 
     {
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+      //  currentWeapon.Reload();        
     }
     private void Awake()
     {
@@ -99,8 +100,14 @@ public class MyCharacterController : MonoBehaviour
         _defaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
         _defaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
 
-        _defaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true; 
+        _defaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
         _defaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
+
+
+        _defaultInput.Weapon.Fire1Pressed.performed += e => ShootingPressed();
+        _defaultInput.Weapon.Fire1Released.performed += e => ShootingReleased();
+
+
 
         _defaultInput.Enable();
 
@@ -135,6 +142,27 @@ public class MyCharacterController : MonoBehaviour
         CalculateAimingIn();
     }
     #endregion
+
+    #region - Shooting -
+
+    private void ShootingPressed()
+    {
+        if (currentWeapon)
+        {
+            currentWeapon.isShooting = true;
+        } 
+    }
+
+    private void ShootingReleased()
+    {
+        if (currentWeapon)
+        {
+            currentWeapon.isShooting = false;
+        }
+    }
+
+    #endregion
+
 
     #region - Aiming In -
 
